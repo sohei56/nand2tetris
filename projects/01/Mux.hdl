@@ -5,11 +5,16 @@
 /** 
  * Multiplexor:
  * if (sel == 0) out = a, else out = b
+ * Or(And(a, Not(sel)), And(b, sel))
  */
 CHIP Mux {
     IN a, b, sel;
     OUT out;
 
     PARTS:
-    //// Replace this comment with your code.
+    Not(in=sel, out=notsel);
+    And(a=notsel, b=a, out=ca);
+    And(a=sel, b=b, out=cb);
+
+    Or(a=ca, b=cb, out=out);
 }
