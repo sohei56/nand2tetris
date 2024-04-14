@@ -1,14 +1,50 @@
-// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/04/Fill.asm
+// checking key-board input
+(KBD_INPUT)
+    @SCREEN  // Address of SCN
+    D=A     // D = 16384
+    @i
+    M=D     // i = 16384
 
-// Runs an infinite loop that listens to the keyboard input.
-// When a key is pressed (any key), the program blackens the screen
-// by writing 'black' in every pixel;
-// the screen should remain fully black as long as the key is pressed. 
-// When no key is pressed, the program clears the screen by writing
-// 'white' in every pixel;
-// the screen should remain fully clear as long as no key is pressed.
+    @24576  // Address of KBD
+    D=M     // D = RAM[24576]
 
-//// Replace this comment with your code.
+    @FILL
+    D;JGT   // if RAM[24576] > 0, then goto FILL
+    @UN_FILL
+    0;JMP   // goto UN_FILL
+
+// fill screen
+(FILL)
+    @i
+    D=M     // D = i (screen address)
+    @24576
+    D=D-A   // D = i - 24576
+    @KBD_INPUT
+    D;JGE   // if (i - 24576) >= 0, then goto KBD_INPUT
+
+    @i
+    A=M     // indirect addressing
+    M=-1    // put black pixels in RAM[i]
+    @i
+    M=M+1   // i = i + 1
+
+    @FILL
+    0;JMP   // goto FILL
+
+// un-fill screen
+(UN_FILL)
+    @i
+    D=M     // D = i
+    @24576
+    D=D-A   // D = i - 24576
+    @KBD_INPUT
+    D;JGE   // if (i - 24576) >= 0, then goto KBD_INPUT
+
+    @i
+    A=M     // indirect addressing
+    M=0     // put white pixels in RAM[i]
+    @i
+    M=M+1   // i = i + 1
+
+    @UN_FILL
+    0;JMP   // goto UN_FILL
